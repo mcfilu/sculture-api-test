@@ -77,7 +77,7 @@ def update_thumbs_down(id: str, users_list: list):
     posts_collection.update_one({"_id": ObjectId(id)}, {"$set": {"thumbs_down":users_list}})
 
 def get_last_posts_db():
-    return posts_collection.find({"active": True})
+    return posts_collection.find({"active": True}).sort('created',pymongo.DESCENDING)
 
 @app.post('/users')
 async def create_user(user_base: UserBase):
@@ -134,3 +134,19 @@ async def get_last_posts():
     posts_list = [str(post['_id']) for post in last_posts]
     # print(posts_list)
     return {"data": posts_list}
+
+
+@app.get("/posts/last/detailed")
+async def get_last_detailed_posts():
+    detailed_list = []
+    last_posts = get_last_posts_db()
+    # print(last_posts)
+    posts_list = [str(post['_id']) for post in last_posts]
+    for post_id in posts_list:
+        post_inst = get_post_db(post_id)
+        upvotes_len = len(post_inst['thumbs_up'])
+        downvotes_len = len(post_inst['thumbs_down'])
+        post_dict = {"id": post_id, "upvotes": upvotes_len, 'downvotes': downvotes_len}
+        detailed_list.append(post_dict)
+    # print(posts_list)
+    return {"data": detailed_list}
