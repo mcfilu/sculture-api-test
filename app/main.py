@@ -77,7 +77,7 @@ def update_thumbs_down(id: str, users_list: list):
     posts_collection.update_one({"_id": ObjectId(id)}, {"$set": {"thumbs_down":users_list}})
 
 def get_last_posts_db():
-    return posts_collection.find({"active": True}).sort('created',pymongo.DESCENDING)
+    return posts_collection.find({"active": True}, limit=10).sort('created',pymongo.DESCENDING)
 
 @app.post('/users')
 async def create_user(user_base: UserBase):
