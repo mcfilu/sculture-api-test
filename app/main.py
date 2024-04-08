@@ -45,6 +45,11 @@ async def create_user(user_base: UserBase):
 
 @app.post("/posts")
 async def create_post(token: str, post: PostBase):
+    """
+    Create Post Endpoint
+    Requuies: users secreate api key, post base class information
+    return created post id
+    """
     user = find_user_token(token)
     user_id = str(user['_id'])
     post_add = PostAdd(title = post.title, body = post.body, active = True, created = datetime.now(), author_id = user_id, thumbs_up = [], thumbs_down=[])
@@ -54,6 +59,11 @@ async def create_post(token: str, post: PostBase):
 
 @app.post("/posts/upvote")
 async def upvote_post(token: str, post_id: str):
+    """
+    Upvote single post
+    Requries: users secreate api key, post id
+    current list of upvotes
+    """
     user = find_user_token(token)
     # print(user)
     post_inst = get_post_db(post_id)
@@ -67,6 +77,11 @@ async def upvote_post(token: str, post_id: str):
 
 @app.post("/posts/downvote")
 async def downvote_post(token: str, post_id: str):
+    """
+    downvote single post
+    Requries: users secreate api key, post id
+    Returns: current list of downvotes
+    """
     user = find_user_token(token)
     post_inst = get_post_db(post_id)
     # print(user)
@@ -81,6 +96,10 @@ async def downvote_post(token: str, post_id: str):
 
 @app.get('/posts/last')
 async def get_last_posts():
+    """
+    Get last 10 posts ordered in descent way
+    Return list of post ids
+    """
     last_posts = get_last_posts_db()
     # print(last_posts)
     posts_list = [str(post['_id']) for post in last_posts]
@@ -90,6 +109,10 @@ async def get_last_posts():
 
 @app.get("/posts/last/detailed")
 async def get_last_detailed_posts():
+    """
+    Get last 10 posts ordered in descent way alongside information about upvotes and downvotes
+    Return list of objects, each has post_id, upovtes, downovtes
+    """
     detailed_list = []
     last_posts = get_last_posts_db()
     # print(last_posts)
